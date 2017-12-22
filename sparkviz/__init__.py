@@ -18,6 +18,9 @@
 import pyspark.sql as sd
 from pyspark.storagelevel import StorageLevel
 import pandas as pd
+# Turn on pandas application/vnd.dataresource+json for use with
+# https://github.com/nteract/nteract/issues/1526
+pd.options.display.html.table_schema = True
 
 def special_show(self, n=2000, truncate=False, vertical=False, auto_sample=True, seed=None):
   """Special version of show, this changes the default to number of rows to 2000
@@ -32,11 +35,12 @@ def special_show(self, n=2000, truncate=False, vertical=False, auto_sample=True,
     sampled_df = self
     if auto_sample:
       total_count = self.count()
-      if n < total_count:
+      do_sample = (n < total_count) and auto_sample
+      if do_sample:
         fraction = (n * 1.1) / total_count
         sampled_df = self.sample(withReplacement=False, fraction = fraction).limit(n)
       pandas_df = sampled_df.toPandas()
-    DataFrameResult(pandas_df, self)
+    DataFrameResult(pandas_df, self, do_sample)
   finally:
     if do_cache:
       df.unpersist()
@@ -44,10 +48,14 @@ def special_show(self, n=2000, truncate=False, vertical=False, auto_sample=True,
 class DataFrameResult():
   """A special fake class for DataFrame results. Wraps a pandas df & a spakr df."""
 
-  def __init__(self, pdf, sdf):
+  def __init__(self, pdf, sdf, sampled):
     self.pdf = pdf
     self.sdf = sdf
+    self.sampled = sampled
     from IPython.display import display
+    # TODO(communicate if we've sampled data to the front end?)
     self.display = display(pdf, display_id=True)
+
+  # TODO(support call backs and push down others)
 
 sd.DataFrame.show = special_show
