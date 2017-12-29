@@ -18,9 +18,6 @@
 import pyspark.sql as sd
 from pyspark.storagelevel import StorageLevel
 import pandas as pd
-# Turn on pandas application/vnd.dataresource+json for use with
-# https://github.com/nteract/nteract/issues/1526
-pd.options.display.html.table_schema = True
 
 def special_show(self, n=2000, truncate=False, vertical=False, auto_sample=True, seed=None):
   """Special version of show, this changes the default to number of rows to 2000
@@ -40,7 +37,7 @@ def special_show(self, n=2000, truncate=False, vertical=False, auto_sample=True,
         fraction = (n * 1.1) / total_count
         sampled_df = self.sample(withReplacement=False, fraction = fraction).limit(n)
       pandas_df = sampled_df.toPandas()
-    DataFrameResult(pandas_df, self, do_sample)
+    return DataFrameResult(pandas_df, self, do_sample)
   finally:
     if do_cache:
       df.unpersist()
@@ -53,9 +50,8 @@ class DataFrameResult():
     self.sdf = sdf
     self.sampled = sampled
     from IPython.display import display
-    # TODO(communicate if we've sampled data to the front end?)
-    self.display = display(pdf, display_id=True)
-
-  # TODO(support call backs and push down others)
+    # TODO(do something where we have more control besides pandas directly)
+    with pd.option_context('display.html.table_schema', True):
+      self.display = display(pdf, metadata={"application/json": { "sampled": sampled} }, display_id=True)
 
 sd.DataFrame.show = special_show
