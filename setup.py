@@ -7,9 +7,7 @@ setup(
     version=VERSION,
     author='Holden Karau',
     author_email='holden@pigscanfly.ca',
-    # Copy the shell script into somewhere likely to be in the users path
     packages=find_packages(),
-    include_package_data = True,
     url='https://github.com/nteract/improved-spark-viz',
     license='LICENSE',
     description='Improve visualizations for PySpark',
