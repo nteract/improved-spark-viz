@@ -53,8 +53,7 @@ class DataFrameResult():
     self.sdf = sdf
     self.sampled = sampled
     from IPython.display import display
-    # TODO(communicate if we've sampled data to the front end?)
-    self.display = display(pdf, display_id=True)
+    self.display = display(pdf, metadata={"application/json": { "sampled": sampled} }, display_id=True)
 
   # TODO(support call backs and push down others)
 
