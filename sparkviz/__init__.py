@@ -75,7 +75,7 @@ class DataFrameResult:
 
         # TODO(do something where we have more control besides pandas directly)
         with pd.option_context('display.html.table_schema', True):
-          self.display = display(pdf, metadata={"application/json": { "sampled": sampled} }, display_id=True)
+          self.display = display(pdf, metadata={"application/vnd.dataresource+json": { "sampled": sampled} }, display_id=True)
 
 
 sd.DataFrame.show = special_show
