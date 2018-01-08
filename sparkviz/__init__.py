@@ -91,7 +91,5 @@ class DataFrameResult:
             else:
                 update_display(self.pdf, display_id=self.display, metadata=metadata)
 
-    def repr(self):
-        return "DataFrameResult wrapper. In the future will support more methods."
 
 sd.DataFrame.show = special_show

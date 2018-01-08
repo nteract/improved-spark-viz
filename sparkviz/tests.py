@@ -38,4 +38,5 @@ class TestSparkViz(SQLTestCase):
     df = self.sqlCtx.createDataFrame(self.data, self.schema)
     df_show_obj = df.show()
     df_show_obj._do_display()
-    # TODO: Figure out how to capture the display result
+    # TODO: Figure out how to capture the display result and verify it
+    # Maybe its easier once the widget exists?
