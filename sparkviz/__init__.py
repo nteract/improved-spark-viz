@@ -71,11 +71,25 @@ class DataFrameResult:
         self.pdf = pdf
         self.sdf = sdf
         self.sampled = sampled
-        from IPython.display import display
+        self.display = None
+        self._do_display()
+        return
 
+    def _do_display(self):
+        """
+        Do the display, only to be called internally on update.
+        """
+        from IPython.display import display, update_display
         # TODO(do something where we have more control besides pandas directly)
         with pd.option_context('display.html.table_schema', True):
-          self.display = display(pdf, metadata={"application/vnd.dataresource+json": { "sampled": sampled} }, display_id=True)
+            metadata={"application/vnd.dataresource+json": { "sampled": self.sampled} }
+            if not self.display:
+                self.display = display(
+                    self.pdf,
+                    metadata=metadata,
+                    display_id=True)
+            else:
+                update_display(self.pdf, display_id=self.display, metadata=metadata)
 
 
 sd.DataFrame.show = special_show
